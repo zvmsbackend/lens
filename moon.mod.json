@@ -1,0 +1,10 @@
+{
+  "name": "sennenki/lens",
+  "version": "0.1.0",
+  "readme": "README.mbt.md",
+  "repository": "https://github.com/zvmsbackend/lens.git",
+  "license": "Apache-2.0",
+  "keywords": ["lens", "functional programming", "fp"],
+  "description": "A lens library for functional programming in MoonScript.",
+  "source": "src"
+}
