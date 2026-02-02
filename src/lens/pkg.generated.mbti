@@ -1,0 +1,63 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "sennenki/lens"
+
+import {
+  "moonbitlang/core/immut/array",
+  "moonbitlang/core/immut/hashmap",
+  "moonbitlang/core/immut/sorted_map",
+  "moonbitlang/core/list",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+type Epi[A, B]
+pub fn[A, B, C] Epi::compose(Self[A, B], Self[B, C]) -> Self[A, C]
+pub fn[A, B] Epi::from(Self[A, B], B) -> A
+pub fn[A, B] Epi::new((A) -> B?, (B) -> A) -> Self[A, B]
+pub fn[A, B] Epi::to(Self[A, B], A) -> B?
+
+type Iso[A, B]
+pub fn[A, B, C] Iso::compose(Self[A, B], Self[B, C]) -> Self[A, C]
+pub fn[A, B] Iso::from(Self[A, B], B) -> A
+pub fn[A, B] Iso::invert(Self[A, B]) -> Self[B, A]
+pub fn[A, B] Iso::new((A) -> B, (B) -> A) -> Self[A, B]
+pub fn[A, B] Iso::to(Self[A, B], A) -> B
+pub fn[A, B] Iso::to_epi(Self[A, B]) -> Epi[A, B]
+
+type Lens[A, B]
+pub fn[A, B, C] Lens::compose(Self[A, B], Self[B, C]) -> Self[A, C]
+pub fn[A, B] Lens::from_iso(Iso[A, B]) -> Self[A, B]
+pub fn[A, B] Lens::fst() -> Self[(A, B), A]
+pub fn[A, B] Lens::get(Self[A, B], A) -> B
+pub fn[A] Lens::id() -> Self[A, A]
+pub fn[A, B] Lens::new((A) -> B, (A, B) -> A) -> Self[A, B]
+pub fn[A, B] Lens::set(Self[A, B], A, B) -> A
+pub fn[A, B] Lens::snd() -> Self[(A, B), B]
+pub fn[A, B] Lens::to_prism(Self[A, B]) -> Prism[A, B]
+
+type Prism[A, B]
+pub fn[A] Prism::array_list() -> Iso[Array[A], @list.List[A]]
+pub fn[A] Prism::array_nth(Int) -> Self[Array[A], A]
+pub fn[A, B, C] Prism::compose(Self[A, B], Self[B, C]) -> Self[A, C]
+pub fn[E, A] Prism::err() -> Self[Result[A, E], E]
+pub fn[A, B] Prism::from_epi(Epi[A, B]) -> Self[A, B]
+pub fn[A, B] Prism::get(Self[A, B], A) -> B?
+pub fn[A] Prism::immut_array_nth(Int) -> Self[@array.T[A], A]
+pub fn[K : Eq + Hash, V] Prism::immut_hashmap(K) -> Self[@hashmap.HashMap[K, V], V]
+pub fn[K : Compare, V] Prism::immut_sorted_map(K) -> Self[@sorted_map.SortedMap[K, V], V]
+pub fn[A] Prism::list_head() -> Self[@list.List[A], A]
+pub fn[A] Prism::list_nth(Int) -> Self[@list.List[A], A]
+pub fn[A] Prism::list_tail() -> Self[@list.List[A], @list.List[A]]
+pub fn[K : Eq + Hash, V] Prism::map(K) -> Self[Map[K, V], V]
+pub fn[A, B] Prism::new((A) -> B?, (A, B) -> A) -> Self[A, B]
+pub fn[E, A] Prism::ok() -> Self[Result[A, E], A]
+pub fn[A, B] Prism::set(Self[A, B], A, B) -> A
+pub fn[A] Prism::some() -> Self[A?, A]
+
+// Type aliases
+
+// Traits
+
