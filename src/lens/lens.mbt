@@ -2,10 +2,10 @@
 using @list {type List}
 
 ///|
-using @immut/hashmap {type HashMap}
+using @hashmap {type HashMap}
 
 ///|
-using @immut/sorted_map {type SortedMap}
+using @sorted_map {type SortedMap}
 
 ///|
 /// Create a new Lens from get and set functions
@@ -152,6 +152,8 @@ pub fn[A, B] Epi::from(self : Epi[A, B], b : B) -> A {
   (self.from)(b)
 }
 
+///|
+/// Compose two Epis
 pub fn[A, B, C] Epi::compose(
   self : Epi[A, B],
   other : Epi[B, C],
@@ -163,27 +165,31 @@ pub fn[A, B, C] Epi::compose(
 }
 
 ///|
-/// 
+/// Focus on the first element of a tuple
 pub fn[A, B] Lens::fst() -> Lens[(A, B), A] {
   { get: p => p.0, set: (p, a) => (a, p.1) }
 }
 
 ///|
+/// Focus on the second element of a tuple
 pub fn[A, B] Lens::snd() -> Lens[(A, B), B] {
   { get: p => p.1, set: (p, b) => (p.0, b) }
 }
 
 ///|
+/// Focus on the value of a Some variant
 pub fn[A] Prism::some() -> Prism[A?, A] {
   { get: oa => oa, set: (_, a) => Some(a) }
 }
 
 ///|
+/// Focus on the Ok variant of a Result
 pub fn[E, A] Prism::ok() -> Prism[Result[A, E], A] {
   { get: _.to_option(), set: (_, a) => Ok(a) }
 }
 
 ///|
+/// Focus on the Err variant of a Result
 pub fn[E, A] Prism::err() -> Prism[Result[A, E], E] {
   {
     get: ra => match ra {
@@ -195,6 +201,7 @@ pub fn[E, A] Prism::err() -> Prism[Result[A, E], E] {
 }
 
 ///|
+/// Focus on the element at the given index in an Array
 pub fn[A] Prism::array_nth(index : Int) -> Prism[Array[A], A] {
   {
     get: arr => arr.get(index),
@@ -207,16 +214,19 @@ pub fn[A] Prism::array_nth(index : Int) -> Prism[Array[A], A] {
 }
 
 ///|
-pub fn[A] Prism::immut_array_nth(index : Int) -> Prism[@immut/array.T[A], A] {
+/// Focus on the element at the given index in an immutable array
+pub fn[A] Prism::immut_array_nth(index : Int) -> Prism[@array.T[A], A] {
   { get: arr => arr.get(index), set: (arr, a) => arr.set(index, a) }
 }
 
 ///|
-pub fn[A] Prism::array_list() -> Iso[Array[A], List[A]] {
+/// Iso between Array and List
+pub fn[A] Iso::array_list() -> Iso[Array[A], List[A]] {
   { to: arr => @list.from_array(arr), from: List::to_array }
 }
 
 ///|
+/// Focus on the head of a List
 pub fn[A] Prism::list_head() -> Prism[List[A], A] {
   {
     get: lst => lst.head(),
@@ -228,6 +238,7 @@ pub fn[A] Prism::list_head() -> Prism[List[A], A] {
 }
 
 ///|
+/// Focus on the tail of a List
 pub fn[A] Prism::list_tail() -> Prism[List[A], List[A]] {
   {
     get: lst => match lst {
@@ -242,19 +253,27 @@ pub fn[A] Prism::list_tail() -> Prism[List[A], List[A]] {
 }
 
 ///|
+/// Focus on the element at the given index in a List
 pub fn[A] Prism::list_nth(index : Int) -> Prism[List[A], A] {
   {
     get: lst => lst.nth(index),
-    set: (lst, a) => loop (@list.empty(), lst, 0) {
-      (acc, Empty, _) => acc.rev()
-      (acc, More(_, tail~), i) if i == index =>
-        acc.rev().prepend(a).concat(tail)
-      (acc, More(head, tail~), i) => continue (acc.prepend(head), tail, i + 1)
-    },
+    set: (lst, a) =>
+      loop (@list.empty(), lst, 0) {
+        (acc, Empty, _) => acc.rev()
+        (acc, More(_, tail~), i) if i == index => {
+          loop (acc, tail.prepend(a)) {
+            (Empty, rest) => rest
+            (More(h, tail=t), rest) => continue (t, rest.prepend(h))
+          }
+        }
+        (acc, More(head, tail~), i) => continue (acc.prepend(head), tail, i + 1)
+      }
   }
 }
 
 ///|
+/// Focus on the value at the given key in a Map.
+/// Returns None if the key is missing.
 pub fn[K : Eq + Hash, V] Prism::map(key : K) -> Prism[Map[K, V], V] {
   {
     get: m => m.get(key),
@@ -267,6 +286,7 @@ pub fn[K : Eq + Hash, V] Prism::map(key : K) -> Prism[Map[K, V], V] {
 }
 
 ///|
+/// Focus on the value at the given key in an Immutable HashMap.
 pub fn[K : Eq + Hash, V] Prism::immut_hashmap(
   key : K,
 ) -> Prism[HashMap[K, V], V] {
@@ -274,6 +294,7 @@ pub fn[K : Eq + Hash, V] Prism::immut_hashmap(
 }
 
 ///|
+/// Focus on the value at the given key in an Immutable SortedMap.
 pub fn[K : Compare, V] Prism::immut_sorted_map(
   key : K,
 ) -> Prism[SortedMap[K, V], V] {

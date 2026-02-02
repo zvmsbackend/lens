@@ -6,5 +6,5 @@
   "license": "Apache-2.0",
   "keywords": ["lens", "functional programming", "fp"],
   "description": "A lens library for functional programming in MoonScript.",
-  "source": "src"
+  "source": "src/lens"
 }

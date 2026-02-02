@@ -1,1 +1,8 @@
-{}
+{
+    "import": [
+        "moonbitlang/core/list",
+        "moonbitlang/core/immut/hashmap",
+        "moonbitlang/core/immut/sorted_map",
+        "moonbitlang/core/immut/array"
+    ]
+}
